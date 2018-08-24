@@ -1,0 +1,38 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: milliefe
+  labels:
+    app: milliefe
+spec:
+  template:
+    metadata:
+      labels:
+        app: milliefe
+        tier: web
+    spec:
+      containers:
+      - name: milliefe
+        image: windmill.build/millie/milliefe
+        command: ["/go/bin/milliefe"]
+        env:
+        - name: TEMPLATE_DIR
+          value: "/go/src/github.com/dbentley/milliefe/templates"
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: milliefe
+  labels:
+    app: milliefe
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: milliefe
+  selector:
+    app: milliefe
